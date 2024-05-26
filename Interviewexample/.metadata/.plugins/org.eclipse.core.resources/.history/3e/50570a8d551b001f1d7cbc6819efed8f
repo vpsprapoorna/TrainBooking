@@ -1,0 +1,18 @@
+package com.example.demo.repos;
+
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.demo.entitys.TicketEntity;
+import com.example.demo.entitys.TrainEntity;
+import com.example.demo.entitys.UserEntity;
+
+public interface TicketRepo extends JpaRepository<TicketEntity, Integer>{
+	
+	
+	public List<TicketEntity> findByDateOfJourneyAndTrainDetailsAndTicketExpired(Date doj,TrainEntity entity,boolean ticketExpired);
+	public List<TicketEntity> findByUserEntity(UserEntity user);
+}

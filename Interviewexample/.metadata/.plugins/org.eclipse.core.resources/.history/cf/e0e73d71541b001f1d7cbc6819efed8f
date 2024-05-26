@@ -1,0 +1,8 @@
+package com.example.demo.servicelayer.pojos;
+
+public class ResponseSeatPojo {
+	private String firstName;
+	private String lastName;
+	private String seatNumber;
+
+}

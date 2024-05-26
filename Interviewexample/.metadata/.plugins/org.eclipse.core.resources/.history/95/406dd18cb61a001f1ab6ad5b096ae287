@@ -1,0 +1,33 @@
+package com.example.demo.servicelayer.pojos;
+
+import java.sql.Date;
+
+import com.example.demo.entitys.SeatEntity;
+import com.example.demo.entitys.TrainEntity;
+import com.example.demo.entitys.UserEntity;
+
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+public class CreateTicketPojo {
+	
+	private String firstName;
+	private String lastName;
+	private String emailAddress;
+
+	private String fromStation;
+
+	private String toStation;
+
+	
+	private UserEntity UserEntity;
+
+	
+	private TrainEntity trainDetails;
+
+	
+	private SeatEntity seatDetails;
+
+	private Date dateOfJourney;
+
+}

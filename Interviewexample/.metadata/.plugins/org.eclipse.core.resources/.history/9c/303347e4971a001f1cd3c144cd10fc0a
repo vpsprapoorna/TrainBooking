@@ -1,0 +1,11 @@
+package in.java.repos;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import in.java.entitys.SeatEntity;
+
+public interface SeatEntityRepo extends JpaRepository<SeatEntity, Integer>{
+	
+	
+
+}

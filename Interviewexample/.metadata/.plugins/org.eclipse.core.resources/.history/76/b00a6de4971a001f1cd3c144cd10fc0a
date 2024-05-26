@@ -1,0 +1,34 @@
+package in.java.entitys;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class StationEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer stationEntityId;
+	private String stationName;
+
+	
+
+	public Integer getStationEntityId() {
+		return stationEntityId;
+	}
+
+	public void setStationEntityId(Integer stationEntityId) {
+		this.stationEntityId = stationEntityId;
+	}
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+}

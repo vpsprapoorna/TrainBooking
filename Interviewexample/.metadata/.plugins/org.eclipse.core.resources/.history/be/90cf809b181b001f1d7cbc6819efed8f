@@ -1,0 +1,14 @@
+package com.example.demo.repos;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.demo.entitys.SeatEntity;
+import com.example.demo.entitys.SectionEntity;
+
+public interface SeatEntityRepo extends JpaRepository<SeatEntity, Integer>{
+	
+public        List<SectionEntity>   findBySectionEntity(SectionEntity sectionEntity)
+
+}

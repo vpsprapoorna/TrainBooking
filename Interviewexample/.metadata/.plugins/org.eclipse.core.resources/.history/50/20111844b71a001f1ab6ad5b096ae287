@@ -1,0 +1,17 @@
+package com.example.demo.servicelayer.pojos;
+
+import java.sql.Date;
+
+public class CreateTicketPojo {
+	
+	private String firstName;
+	private String lastName;
+	private String emailAddress;
+	private String fromStation;
+	private String adharNumber;
+	private String toStation;
+    private Date dateOfJourney;
+	
+	
+
+}

@@ -1,0 +1,206 @@
+package com.example.demo.servicelayer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entitys.SeatEntity;
+import com.example.demo.entitys.SectionEntity;
+import com.example.demo.entitys.TicketEntity;
+import com.example.demo.entitys.TrainEntity;
+import com.example.demo.entitys.UserEntity;
+import com.example.demo.repos.SeatEntityRepo;
+import com.example.demo.repos.TicketRepo;
+import com.example.demo.repos.TrainEntityRepo;
+import com.example.demo.repos.UserRepo;
+import com.example.demo.servicelayer.pojos.CreateTicketPojo;
+import com.example.demo.servicelayer.pojos.DeleteResponsePojo;
+import com.example.demo.servicelayer.pojos.ResponseSeatPojo;
+import com.example.demo.servicelayer.pojos.ResponseTicketPojo;
+
+@Service
+public class TicketServiceClass {
+
+	@Autowired
+	private UserRepo userRepo;
+
+	@Autowired
+	private TrainEntityRepo trainEntityRepo;
+
+	@Autowired
+	private SeatEntityRepo seatEntityRepo;
+
+	@Autowired
+	private TicketRepo ticketRepo;
+
+	public ResponseEntity<ResponseTicketPojo> newuser(CreateTicketPojo CreateTicketPojo) {
+
+		UserEntity user = new UserEntity();
+		user.setFirstName(CreateTicketPojo.getFirstName());
+		user.setLastName(CreateTicketPojo.getLastName());
+		user.setEmailAddress(CreateTicketPojo.getEmailAddress());
+		user.setAdharNumber(CreateTicketPojo.getAdharNumber());
+		Example<UserEntity> example = Example.of(user);
+		Optional<UserEntity> findOne = userRepo.findOne(example);
+		if (findOne.isPresent()) {
+			user = findOne.get();
+		} else {
+			userRepo.save(user);
+		}
+
+		TicketEntity ticketEntity = new TicketEntity();
+		ticketEntity.setUserEntity(user);
+		ticketEntity.setFromStation(CreateTicketPojo.getFromStation());
+		ticketEntity.setToStation(CreateTicketPojo.getToStation());
+		ticketEntity.setDateOfJourney(CreateTicketPojo.getDateOfJourney());
+		System.out.println("............." + CreateTicketPojo);
+		List<TrainEntity> findByFromStationAndToStation = trainEntityRepo
+				.findByFromStationAndToStation(CreateTicketPojo.getFromStation(), CreateTicketPojo.getToStation());
+		System.out.println("............w." + findByFromStationAndToStation);
+		for (TrainEntity obj : findByFromStationAndToStation) {
+			SectionEntity sectionA = obj.getSectionA();
+
+			List<SeatEntity> allSeatsInSectionA = seatEntityRepo.findBySectionEntity(sectionA);
+			List<TicketEntity> findByDateOfJourneyAndTrainDetailsAndTicketExpired = ticketRepo
+					.findByDateOfJourneyAndTrainDetailsAndTicketExpired(CreateTicketPojo.getDateOfJourney(), obj,
+							false);
+			SectionEntity sectionB = obj.getSectionB();
+			List<SeatEntity> allSeatsInSectionB = seatEntityRepo.findBySectionEntity(sectionB);
+
+			List<SeatEntity> bookedSeatcollections = findByDateOfJourneyAndTrainDetailsAndTicketExpired.stream()
+					.map((t) -> t.getSeatDetails()).collect(Collectors.toList());
+			allSeatsInSectionA.removeAll(bookedSeatcollections);
+			allSeatsInSectionB.removeAll(bookedSeatcollections);
+
+			if (!allSeatsInSectionA.isEmpty()) {
+				ticketEntity.setSeatDetails(allSeatsInSectionA.get(0));
+				ticketEntity.setTrainDetails(obj);
+				break;
+			} else if (!allSeatsInSectionB.isEmpty()) {
+				ticketEntity.setSeatDetails(allSeatsInSectionB.get(0));
+				ticketEntity.setTrainDetails(obj);
+				break;
+			}
+
+		}
+		ticketEntity.setPrice(20.00);
+		ticketEntity.setTicketExpired(false);
+		if (ticketEntity.getSeatDetails() != null) {
+			ticketEntity.setErrorMessage("ticket book successfully");
+		} else {
+			ticketEntity.setErrorMessage("No seats are available");
+		}
+
+		ticketRepo.save(ticketEntity);
+
+		ResponseTicketPojo responseTicketPojo = new ResponseTicketPojo();
+		if (ticketEntity.getUserEntity() != null) {
+			responseTicketPojo.setFirstName(ticketEntity.getUserEntity().getFirstName());
+			responseTicketPojo.setLastName(ticketEntity.getUserEntity().getLastName());
+			responseTicketPojo.setEmailAddress(ticketEntity.getUserEntity().getEmailAddress());
+		}
+		responseTicketPojo.setPricePaid(ticketEntity.getPrice());
+		responseTicketPojo.setDateOfJourney(ticketEntity.getDateOfJourney());
+		if (ticketEntity.getSeatDetails() != null) {
+			responseTicketPojo.setSeatNo(ticketEntity.getSeatDetails().getSeatNumber());
+			responseTicketPojo.setSectionNo(ticketEntity.getSeatDetails().getSectionEntity().getSectionName());
+		}
+		responseTicketPojo.setFromStation(ticketEntity.getFromStation());
+		responseTicketPojo.setToStation(ticketEntity.getToStation());
+		if (ticketEntity.getTrainDetails() != null) {
+			responseTicketPojo.setTrainNumber(ticketEntity.getTrainDetails().getTrainNumber());
+		}
+		responseTicketPojo.setMessage(ticketEntity.getErrorMessage());
+
+		return new ResponseEntity<ResponseTicketPojo>(responseTicketPojo, HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
+	public List<ResponseTicketPojo> getTicketDetails(String firstName,String lastName,String emailAddress){
+		UserEntity userDetail = userRepo.findByFirstNameAndLastNameAndEmailAddress(firstName, lastName, emailAddress);
+		List<TicketEntity> listOfTicketsByUser = ticketRepo.findByUserEntity(userDetail);
+		
+		List<ResponseTicketPojo> responseTicketPojoList=new ArrayList<ResponseTicketPojo>();
+		
+		for(TicketEntity obj:listOfTicketsByUser) {
+		ResponseTicketPojo responseTicketPojo=new ResponseTicketPojo();
+		responseTicketPojo.setFromStation(obj.getFromStation());
+		responseTicketPojo.setToStation(obj.getToStation());
+		responseTicketPojo.setEmailAddress(obj.getUserEntity().getEmailAddress());
+		responseTicketPojo.setFirstName(obj.getUserEntity().getFirstName());
+		responseTicketPojo.setEmailAddress(obj.getUserEntity().getLastName());
+		responseTicketPojo.setDateOfJourney(obj.getDateOfJourney());
+		responseTicketPojo.setPricePaid(obj.getPrice());
+		responseTicketPojo.setSeatNo(obj.getSeatDetails().getSeatNumber());
+		responseTicketPojo.setTrainNumber(obj.getTrainDetails().getTrainNumber());
+		responseTicketPojo.setSectionNo(obj.getSeatDetails().getSectionEntity().getSectionName());
+		responseTicketPojo.setMessage(obj.getErrorMessage());
+		responseTicketPojoList.add(responseTicketPojo);
+		}
+		return responseTicketPojoList;
+		
+	}
+	
+	
+	public DeleteResponsePojo getTicketDetailsForDelete(String firstName,String lastName,String emailAddress){
+		UserEntity userDetail = userRepo.findByFirstNameAndLastNameAndEmailAddress(firstName, lastName, emailAddress);
+		List<TicketEntity> listOfTicketsByUser = ticketRepo.findByUserEntity(userDetail);
+		DeleteResponsePojo deleteResponsePojo=new DeleteResponsePojo();
+		
+		if(listOfTicketsByUser.isEmpty()) {
+			deleteResponsePojo.setMessage("No Booking details found on this user");
+			deleteResponsePojo.setUserName(firstName);
+			return deleteResponsePojo;
+		}
+		
+		for(TicketEntity obj:listOfTicketsByUser) {
+			if(!obj.isTicketExpired()) {
+				listOfTicketsByUser.remove(obj);
+				deleteResponsePojo.setMessage("Deleted succesfully");
+				deleteResponsePojo.setUserName(obj.getUserEntity().getFirstName());
+				
+			}else {
+				deleteResponsePojo.setMessage("No tickets found to delete");
+				deleteResponsePojo.setUserName(obj.getUserEntity().getFirstName());
+			}
+		}
+		return deleteResponsePojo;
+		}
+	
+	
+		
+	
+	
+public 	ResponseSeatPojo getuserandSeats(String section) {
+	
+	List<TicketEntity> sectionNameListOfUsers = ticketRepo.findBySectionName(section);
+	for(TicketEntity obj:)
+	
+	ResponseSeatPojo ResponseSeatPojo=new ResponseSeatPojo();
+	return null;
+	
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+}

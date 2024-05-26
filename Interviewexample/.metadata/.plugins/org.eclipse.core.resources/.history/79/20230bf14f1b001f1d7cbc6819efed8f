@@ -1,0 +1,7 @@
+package com.example.demo.servicelayer.pojos;
+
+public class DeleteResponsePojo {
+	private String message;
+	private String UserName;
+
+}

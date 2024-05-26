@@ -1,0 +1,100 @@
+package com.example.demo.entitys;
+
+import java.sql.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
+public class TicketEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer TicketEntityId;
+	
+	
+	private String fromStation;
+
+	
+	private String toStation;
+
+	@ManyToOne
+	@JoinColumn(name = "USER_ID")
+	private UserEntity UserEntity;
+
+	@ManyToOne
+	@JoinColumn(name = "TRAIN_ENTITY_ID")
+	private TrainEntity trainDetails;
+
+	@ManyToOne
+	@JoinColumn(name = "SEAT_ENTITY_ID")
+	private SeatEntity seatDetails;
+
+	private Date dateOfJourney;
+	private Double price;
+
+	private boolean ticketExpired;
+
+	public Integer getTicketEntityId() {
+		return TicketEntityId;
+	}
+
+	public void setTicketEntityId(Integer ticketEntityId) {
+		TicketEntityId = ticketEntityId;
+	}
+
+	
+
+	public UserEntity getUserEntity() {
+		return UserEntity;
+	}
+
+	public void setUserEntity(UserEntity userEntity) {
+		UserEntity = userEntity;
+	}
+
+	public TrainEntity getTrainDetails() {
+		return trainDetails;
+	}
+
+	public void setTrainDetails(TrainEntity trainDetails) {
+		this.trainDetails = trainDetails;
+	}
+
+	public SeatEntity getSeatDetails() {
+		return seatDetails;
+	}
+
+	public void setSeatDetails(SeatEntity seatDetails) {
+		this.seatDetails = seatDetails;
+	}
+
+	public Date getDateOfJourney() {
+		return dateOfJourney;
+	}
+
+	public void setDateOfJourney(Date dateOfJourney) {
+		this.dateOfJourney = dateOfJourney;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public boolean isTicketExpired() {
+		return ticketExpired;
+	}
+
+	public void setTicketExpired(boolean ticketExpired) {
+		this.ticketExpired = ticketExpired;
+	}
+
+}

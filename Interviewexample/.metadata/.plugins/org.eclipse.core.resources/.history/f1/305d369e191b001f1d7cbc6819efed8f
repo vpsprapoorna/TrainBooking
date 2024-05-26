@@ -1,0 +1,21 @@
+package com.example.demo.repos;
+
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.demo.entitys.SeatEntity;
+import com.example.demo.entitys.TicketEntity;
+
+public interface TicketRepo extends JpaRepository<TicketEntity, Integer>{
+	
+	
+	@Query
+  // SEAT TO SECTION UNDI TRAIN LO SECTION UNDI
+	("select SeatEntity from TrainEntity")
+public List<SeatEntity>  getNotBokkedTickets(String trainNumber,Date dateOfJourney);
+
+}

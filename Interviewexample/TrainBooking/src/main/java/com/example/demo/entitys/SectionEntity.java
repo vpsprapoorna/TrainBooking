@@ -1,0 +1,32 @@
+package com.example.demo.entitys;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class SectionEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer sectionEntityId;
+	private String sectionName;
+
+	public Integer getSectionEntityId() {
+		return sectionEntityId;
+	}
+
+	public void setSectionEntityId(Integer sectionEntityId) {
+		this.sectionEntityId = sectionEntityId;
+	}
+
+	public String getSectionName() {
+		return sectionName;
+	}
+
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
+	}
+
+}
